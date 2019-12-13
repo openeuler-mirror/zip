@@ -2,7 +2,7 @@ Name:            zip
 Version:         3.0
 Release:         24
 Summary:         A compression and file packaging/archive utility
-License:         BSD
+License:         Info-ZIP
 URL:             http://www.info-zip.org/Zip.html
 Source0:         http://downloads.sourceforge.net/infozip/zip30.tar.gz
 
