@@ -1,6 +1,6 @@
 Name:            zip
 Version:         3.0
-Release:         24
+Release:         25
 Summary:         A compression and file packaging/archive utility
 License:         Info-ZIP
 URL:             http://www.info-zip.org/Zip.html
@@ -16,7 +16,7 @@ Patch6:          zipnote.patch
 
 Patch6000:       CVE-2018-13410.patch
 
-BuildRequires:   bzip2-devel
+BuildRequires:   bzip2-devel gcc
 Requires:        unzip
 
 %description
@@ -54,5 +54,8 @@ mkdir -p %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/zip*
 
 %changelog
+* Fri Feb 14 2020 chengquan <chengquan3@huawei.com> - 3.0-25
+- Add gcc BuildRequire
+
 * Tue Sep 3 2019 dongjian <dongjian13@huawei.com> - 3.0-24
 - Rebuild and modify the description
