@@ -1,6 +1,6 @@
 Name:            zip
 Version:         3.0
-Release:         25
+Release:         26
 Summary:         A compression and file packaging/archive utility
 License:         Info-ZIP
 URL:             http://www.info-zip.org/Zip.html
@@ -15,6 +15,8 @@ Patch5:          zip-3.0-format-security.patch
 Patch6:          zipnote.patch
 
 Patch6000:       CVE-2018-13410.patch
+
+Patch9000:	 openEuler-Cleanup-residual-temporary-file.patch
 
 BuildRequires:   bzip2-devel gcc
 Requires:        unzip
@@ -54,6 +56,9 @@ mkdir -p %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/zip*
 
 %changelog
+* Dec Thu  8 2020 wuchaochao <wuchaochao4@huawei.com> - 3.0-26
+- Add openEuler-Cleanup-residual-temporary-file.patch
+
 * Fri Feb 14 2020 chengquan <chengquan3@huawei.com> - 3.0-25
 - Add gcc BuildRequire
 
