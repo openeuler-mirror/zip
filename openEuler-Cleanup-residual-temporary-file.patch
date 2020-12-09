@@ -1,0 +1,20 @@
+diff -Naur a/zip.c b/zip.c
+--- a/zip.c     2020-10-14 14:46:09.809000000 +0800
++++ b/zip.c     2020-10-15 14:17:17.884000000 +0800
+@@ -450,6 +450,15 @@
+ /* Upon getting a user interrupt, turn echo back on for tty and abort
+    cleanly using ziperr(). */
+ {
++/* Cleanup residual temporary file */
++if ( s == SIGABRT )
++  {
++    if (tempzip != NULL)
++    {
++      destroy(tempzip);
++    }
++  }
++
+ #if defined(AMIGA) && defined(__SASC)
+    _abort();
+ #else
+
