@@ -1,0 +1,105 @@
+diff -Nabur zip302/crc32.c zip30/crc32.c
+--- zip302/crc32.c	2021-04-19 23:53:33.113226036 +0800
++++ zip30/crc32.c	2021-04-19 23:54:07.821747891 +0800
+@@ -675,7 +675,7 @@
+ 
+ #endif /* (IZ_CRC_BE_OPTIMIZ || IZ_CRC_LE_OPTIMIZ) */
+ 
+-
++#if 0
+ /* ========================================================================= */
+ ulg crc32(crc, buf, len)
+     ulg crc;                    /* crc shift register */
+@@ -726,6 +726,38 @@
+ 
+   return REV_BE(c) ^ 0xffffffffL;   /* (instead of ~c for 64-bit machines) */
+ }
++//
++#endif
++
++
++
++u_int32_t crc32(u_int32_t crc,const u_int8_t *p, unsigned int len)
++{
++int64_t length = len;
++
++while ((length -= sizeof(u_int64_t)) >=0) {
++	__builtin_aarch64_crc32cx(crc, *((u_int64_t *)p));
++	p += sizeof(u_int64_t);
++}
++
++if (length & sizeof(u_int32_t)) {
++	__builtin_aarch64_crc32cw(crc, *((u_int32_t *)p));
++	p += sizeof(u_int32_t);
++}
++
++if (length & sizeof(u_int16_t)) {
++	__builtin_aarch64_crc32ch(crc, *((u_int16_t *)p));
++	p += sizeof(u_int16_t);
++}
++
++if (length & sizeof(u_int8_t))
++	__builtin_aarch64_crc32cb(crc, *p);
++
++return crc;
++} 
++
++
++
+ #endif /* !ASM_CRC */
+ #endif /* !CRC_TABLE_ONLY */
+ #endif /* !USE_ZLIB */
+diff -Nabur zip302/crc32.h zip30/crc32.h
+--- zip302/crc32.h	2021-04-19 23:53:33.113226036 +0800
++++ zip30/crc32.h	2021-04-19 23:54:07.821747891 +0800
+@@ -36,7 +36,8 @@
+ #    undef IZ_CRC_BE_OPTIMIZ
+ #  endif
+ #else /* !(USE_ZLIB || CRC_TABLE_ONLY) */
+-   ulg      crc32           OF((ulg crc, ZCONST uch *buf, extent len));
++  u_int32_t crc32(u_int32_t crc,const u_int8_t *p, unsigned int len);
++  // ulg      crc32           OF((ulg crc, ZCONST uch *buf, extent len));
+ #endif /* ?(USE_ZLIB || CRC_TABLE_ONLY) */
+ 
+ #ifndef CRC_32_TAB
+@@ -47,10 +48,13 @@
+ #  undef CRC32
+ #endif
+ #ifdef IZ_CRC_BE_OPTIMIZ
+-#  define CRC32UPD(c, crctab) (crctab[((c) >> 24)] ^ ((c) << 8))
+-#  define CRC32(c, b, crctab) (crctab[(((int)(c) >> 24) ^ (b))] ^ ((c) << 8))
++//#  define CRC32UPD(c, crctab) (crctab[((c) >> 24)] ^ ((c) << 8))
++  #  define CRC32UPD(c) (__builtin_aarch64_crc32w(c,0))
++//#  define CRC32(c, b, crctab) (crctab[(((int)(c) >> 24) ^ (b))] ^ ((c) << 8))
++  #  define CRC32(c,b) (__builtin_aarch64_crc32w(c,b))
+ #  define REV_BE(w) (((w)>>24)+(((w)>>8)&0xff00)+ \
+                     (((w)&0xff00)<<8)+(((w)&0xff)<<24))
++
+ #else
+ #  define CRC32UPD(c, crctab) (crctab[((int)(c)) & 0xff] ^ ((c) >> 8))
+ #  define CRC32(c, b, crctab) (crctab[((int)(c) ^ (b)) & 0xff] ^ ((c) >> 8))
+diff -Nabur zip302/unix/Makefile zip30/unix/Makefile
+--- zip302/unix/Makefile	2021-04-19 23:53:33.761235779 +0800
++++ zip30/unix/Makefile	2021-04-19 23:54:31.682106640 +0800
+@@ -36,7 +36,7 @@
+ CHMOD = chmod
+ BINFLAGS = 755
+ MANFLAGS = 644
+-
++ARCH = $(shell getconf LONG_BIT)
+ # target directories - where to install executables and man pages to
+ prefix = /usr/local
+ BINDIR = $(prefix)/bin
+@@ -80,10 +80,10 @@
+ .SUFFIXES:
+ .SUFFIXES: _.o .o .c .doc .1
+ .c_.o:
+-	$(CC) -c $(CFLAGS) -DUTIL -o $@ $<
++	$(CC) -c $(CFLAGS) -DUTIL  -DARCH=$(ARCH) -march=armv8.1-a -o $@ $<
+ 
+ .c.o:
+-	$(CC) -c $(CFLAGS) $<
++	$(CC) -c $(CFLAGS)  -DARCH=$(ARCH) -march=armv8.1-a $<
+ 
+ .1.doc:
+ 	nroff -man $< | col -bx | uniq > $@
