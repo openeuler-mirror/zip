@@ -1,6 +1,6 @@
 Name:            zip
 Version:         3.0
-Release:         26
+Release:         27
 Summary:         A compression and file packaging/archive utility
 License:         Info-ZIP
 URL:             http://www.info-zip.org/Zip.html
@@ -58,7 +58,7 @@ mkdir -p %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/zip*
 
 %changelog
-* May Sun  9 2021 hanzhelii <182212254@bjtu.edu.cn> - 3.0-27
+* May Sun 9 2021 hanzhelii <182212254@bjtu.edu.cn> - 3.0-27
 - Add zip-3.0-crc-builtin.patch
 
 * Dec Thu  8 2020 wuchaochao <wuchaochao4@huawei.com> - 3.0-26
