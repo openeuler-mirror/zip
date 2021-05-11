@@ -1,0 +1,84 @@
+diff -Nabur zip30/crc32.c zip302/crc32.c
+--- zip30/crc32.c	2008-05-05 00:51:40.000000000 +0800
++++ zip302/crc32.c	2021-05-11 17:39:07.404427443 +0800
+@@ -675,7 +675,32 @@
+ 
+ #endif /* (IZ_CRC_BE_OPTIMIZ || IZ_CRC_LE_OPTIMIZ) */
+ 
++#ifdef ARCH_AARCH64
++u_int32_t crc32(u_int32_t crc,const u_int8_t *p, unsigned int len)
++{
++int64_t length = len;
++
++while ((length -= sizeof(u_int64_t)) >=0) {
++        __builtin_aarch64_crc32cx(crc, *((u_int64_t *)p));
++        p += sizeof(u_int64_t);
++}
++
++if (length & sizeof(u_int32_t)) {
++        __builtin_aarch64_crc32cw(crc, *((u_int32_t *)p));
++        p += sizeof(u_int32_t);
++}
+ 
++if (length & sizeof(u_int16_t)) {
++        __builtin_aarch64_crc32ch(crc, *((u_int16_t *)p));
++        p += sizeof(u_int16_t);
++}
++
++if (length & sizeof(u_int8_t))
++        __builtin_aarch64_crc32cb(crc, *p);
++
++return crc;
++}
++#else
+ /* ========================================================================= */
+ ulg crc32(crc, buf, len)
+     ulg crc;                    /* crc shift register */
+@@ -726,6 +751,8 @@
+ 
+   return REV_BE(c) ^ 0xffffffffL;   /* (instead of ~c for 64-bit machines) */
+ }
++#endif /* !ARCH_AARCH64*/
++
+ #endif /* !ASM_CRC */
+ #endif /* !CRC_TABLE_ONLY */
+ #endif /* !USE_ZLIB */
+diff -Nabur zip30/crc32.h zip302/crc32.h
+--- zip30/crc32.h	2008-03-28 20:25:46.000000000 +0800
++++ zip302/crc32.h	2021-05-11 17:40:10.893424721 +0800
+@@ -36,7 +36,11 @@
+ #    undef IZ_CRC_BE_OPTIMIZ
+ #  endif
+ #else /* !(USE_ZLIB || CRC_TABLE_ONLY) */
++#  ifdef ARCH_AARCH64
++  u_int32_t crc32(u_int32_t crc,const u_int8_t *p, unsigned int len);
++#  else
+    ulg      crc32           OF((ulg crc, ZCONST uch *buf, extent len));
++#  endif
+ #endif /* ?(USE_ZLIB || CRC_TABLE_ONLY) */
+ 
+ #ifndef CRC_32_TAB
+diff -Nabur zip30/unix/Makefile zip302/unix/Makefile
+--- zip30/unix/Makefile	2008-05-07 14:33:56.000000000 +0800
++++ zip302/unix/Makefile	2021-05-11 17:41:54.139045266 +0800
+@@ -37,6 +37,9 @@
+ BINFLAGS = 755
+ MANFLAGS = 644
+ 
++
++TARGET_ARCH = $(shell uname -m)
++ARCH = $(shell getconf LONG_BIT)
+ # target directories - where to install executables and man pages to
+ prefix = /usr/local
+ BINDIR = $(prefix)/bin
+@@ -59,6 +62,10 @@
+ #   LFLAGS2   flags after obj file list (libraries, etc)
+ CFLAGS_NOOPT = -I. -DUNIX $(LOCAL_ZIP)
+ CFLAGS = -O2 $(CFLAGS_NOOPT)
++ifeq ($(TARGET_ARCH),aarch64)
++CFLAGS += -DARCH=$(ARCH) -march=armv8.1-a -D ARCH_AARCH64
++endif
++
+ LFLAGS1 =
+ LFLAGS2 = -s
+ 
