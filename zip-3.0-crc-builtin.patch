@@ -1,8 +1,9 @@
 From 6210c2007a430882d234d846d133d5f3799434aa Mon Sep 17 00:00:00 2001
 From: Euler Hanzh <18221254@bjtu.edu.cn>
 Date: Mon, 17 May 2021 17:32:51 +0800
-Subject: [PATCH 2/2] 2
-
+Subject: [PATCH] this patch is created for performance optimization in crc calculation only suitable for openeuler of aarch64 architecture. 
+                 The speed of zip software when running can be accelerate by nearly 20% than before.
+                 
 ---
  zip30/crc32.c       | 27 +++++++++++++++++++++++++++
  zip30/crc32.h       |  4 ++++
@@ -20,27 +21,27 @@ index 6b2403b..9e26af7 100644
 +#ifdef ARCH_AARCH64
 +u_int32_t crc32(u_int32_t crc,const u_int8_t *p, unsigned int len)
 +{
-+int64_t length = len;
++  int64_t length = len;
 +
-+while ((length -= sizeof(u_int64_t)) >=0) {
-+        __builtin_aarch64_crc32cx(crc, *((u_int64_t *)p));
-+        p += sizeof(u_int64_t);
-+}
++  while ((length -= sizeof(u_int64_t)) >=0) {
++    __builtin_aarch64_crc32cx(crc, *((u_int64_t *)p));
++    p += sizeof(u_int64_t);
++  }
 
-+if (length & sizeof(u_int32_t)) {
-+        __builtin_aarch64_crc32cw(crc, *((u_int32_t *)p));
-+        p += sizeof(u_int32_t);
-+}
++  if (length & sizeof(u_int32_t)) {
++    __builtin_aarch64_crc32cw(crc, *((u_int32_t *)p));
++    p += sizeof(u_int32_t);
++  }
 +
-+if (length & sizeof(u_int16_t)) {
-+        __builtin_aarch64_crc32ch(crc, *((u_int16_t *)p));
-+        p += sizeof(u_int16_t);
-+}
++  if (length & sizeof(u_int16_t)) {
++    __builtin_aarch64_crc32ch(crc, *((u_int16_t *)p));
++    p += sizeof(u_int16_t);
++  }
 +
-+if (length & sizeof(u_int8_t))
-+        __builtin_aarch64_crc32cb(crc, *p);
++  if (length & sizeof(u_int8_t))
++    __builtin_aarch64_crc32cb(crc, *p);
 +
-+return crc;
++  return crc;
 +}
 +#else
  /* ========================================================================= */
@@ -51,7 +52,6 @@ index 6b2403b..9e26af7 100644
    return REV_BE(c) ^ 0xffffffffL;   /* (instead of ~c for 64-bit machines) */
  }
 +#endif /* !ARCH_AARCH64*/
-+
  #endif /* !ASM_CRC */
  #endif /* !CRC_TABLE_ONLY */
  #endif /* !USE_ZLIB */
@@ -64,7 +64,7 @@ index 83af240..6fdaf32 100644
  #  endif
  #else /* !(USE_ZLIB || CRC_TABLE_ONLY) */
 +#  ifdef ARCH_AARCH64
-+  u_int32_t crc32(u_int32_t crc,const u_int8_t *p, unsigned int len);
++   u_int32_t crc32(u_int32_t crc,const u_int8_t *p, unsigned int len);
 +#  else
     ulg      crc32           OF((ulg crc, ZCONST uch *buf, extent len));
 +#  endif
