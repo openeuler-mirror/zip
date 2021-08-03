@@ -1,6 +1,6 @@
 Name:            zip
 Version:         3.0
-Release:         28
+Release:         29
 Summary:         A compression and file packaging/archive utility
 License:         Info-ZIP
 URL:             http://www.info-zip.org/Zip.html
@@ -19,7 +19,6 @@ Patch6000:       CVE-2018-13410.patch
 Patch9000:	 openEuler-Cleanup-residual-temporary-file.patch
 
 BuildRequires:   bzip2-devel gcc
-Requires:        unzip
 
 %description
 The zip program is a compression and file packaging utility. Zip has one
@@ -56,6 +55,9 @@ mkdir -p %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/zip*
 
 %changelog
+* Tue Aug 03 2021 shixuantong <shixuantong@huawei.com> - 3.0-29
+- remove unnecessary installation dependencies
+
 * Mon Jun 21 2021 shixuantong <shixuantong@huawei.com> - 3.0-28
 - revert zip-3.0-crc-builtin.patch
 
