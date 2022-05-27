@@ -1,6 +1,6 @@
 Name:            zip
 Version:         3.0
-Release:         26
+Release:         27
 Summary:         A compression and file packaging/archive utility
 License:         Info-ZIP
 URL:             http://www.info-zip.org/Zip.html
@@ -56,7 +56,10 @@ mkdir -p %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/zip*
 
 %changelog
-* Dec Thu  8 2020 wuchaochao <wuchaochao4@huawei.com> - 3.0-26
+* Fri May 27 2022 konglidong <konglidong@uniontech.com> - 3.0-27
+- modify bad date in %changelog
+
+* Tue Dec 8 2020 wuchaochao <wuchaochao4@huawei.com> - 3.0-26
 - Add openEuler-Cleanup-residual-temporary-file.patch
 
 * Fri Feb 14 2020 chengquan <chengquan3@huawei.com> - 3.0-25
