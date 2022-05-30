@@ -1,6 +1,6 @@
 Name:            zip
 Version:         3.0
-Release:         29
+Release:         30
 Summary:         A compression and file packaging/archive utility
 License:         Info-ZIP
 URL:             http://www.info-zip.org/Zip.html
@@ -55,16 +55,19 @@ mkdir -p %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/zip*
 
 %changelog
+* Fri May 27 2022 konglidong <konglidong@uniontech.com> - 3.0-30
+- modify bad date in %changelog
+
 * Tue Aug 03 2021 shixuantong <shixuantong@huawei.com> - 3.0-29
 - remove unnecessary installation dependencies
 
 * Mon Jun 21 2021 shixuantong <shixuantong@huawei.com> - 3.0-28
 - revert zip-3.0-crc-builtin.patch
 
-* May Sun 9 2021 hanzhelii <182212254@bjtu.edu.cn> - 3.0-27
+* Sun May 9 2021 hanzhelii <182212254@bjtu.edu.cn> - 3.0-27
 - Add zip-3.0-crc-builtin.patch
 
-* Dec Thu  8 2020 wuchaochao <wuchaochao4@huawei.com> - 3.0-26
+* Tue Dec 8 2020 wuchaochao <wuchaochao4@huawei.com> - 3.0-26
 - Add openEuler-Cleanup-residual-temporary-file.patch
 
 * Fri Feb 14 2020 chengquan <chengquan3@huawei.com> - 3.0-25
