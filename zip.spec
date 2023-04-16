@@ -1,6 +1,6 @@
 Name:            zip
 Version:         3.0
-Release:         30
+Release:         31
 Summary:         A compression and file packaging/archive utility
 License:         Info-ZIP
 URL:             http://www.info-zip.org/Zip.html
@@ -13,10 +13,11 @@ Patch3:          zip-3.0-time.patch
 Patch4:          man.patch
 Patch5:          zip-3.0-format-security.patch
 Patch6:          zipnote.patch
+Patch7:          zip-fix-cc.patch
 
 Patch6000:       CVE-2018-13410.patch
 
-Patch9000:	 openEuler-Cleanup-residual-temporary-file.patch
+Patch9000:	     openEuler-Cleanup-residual-temporary-file.patch
 
 BuildRequires:   bzip2-devel gcc
 
@@ -37,7 +38,7 @@ This package contains the documents and manuals related to zip.
 %autosetup -n zip30 -p1
 
 %build
-%make_build -f unix/Makefile prefix=%{_prefix} "CFLAGS_NOOPT=-I. -DUNIX $RPM_OPT_FLAGS" generic_gcc
+%make_build -f unix/Makefile prefix=%{_prefix} "CFLAGS_NOOPT=-I. -DUNIX $RPM_OPT_FLAGS" generic
 
 %install
 mkdir -p %{buildroot}%{_bindir}
@@ -55,6 +56,9 @@ mkdir -p %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/zip*
 
 %changelog
+* Sat Apr 15 2023 Xiaoya Huang <huangxiaoya@iscas.ac.cn> - 3.0-31
+- Fix CC compiler support
+
 * Fri May 27 2022 konglidong <konglidong@uniontech.com> - 3.0-30
 - modify bad date in %changelog
 
