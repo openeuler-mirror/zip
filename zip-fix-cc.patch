@@ -1,0 +1,11 @@
+--- a/unix/Makefile	2008-05-07 14:33:56.000000000 +0800
++++ b/unix/Makefile	2023-04-16 16:14:10.611625606 +0800
+@@ -22,7 +22,7 @@
+ LN = ln -s
+ 
+ # (to use the GNU compiler, change cc to gcc in CC)
+-CC = cc
++CC ?= cc
+ BIND = $(CC)
+ AS = $(CC) -c
+ CPP = /lib/cpp
