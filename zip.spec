@@ -1,6 +1,6 @@
 Name:            zip
 Version:         3.0
-Release:         31
+Release:         32
 Summary:         A compression and file packaging/archive utility
 License:         Info-ZIP
 URL:             http://www.info-zip.org/Zip.html
@@ -14,6 +14,7 @@ Patch4:          man.patch
 Patch5:          zip-3.0-format-security.patch
 Patch6:          zipnote.patch
 Patch7:          zip-fix-cc.patch
+Patch8:          zip-fix-type-conflict.patch
 
 Patch6000:       CVE-2018-13410.patch
 
@@ -56,6 +57,9 @@ mkdir -p %{buildroot}%{_mandir}/man1
 %{_mandir}/man1/zip*
 
 %changelog
+* Sun Mar 3 2024 lijinzhe <jinzhe.oerv@isrc.iscas.ac.cn> - 3.0-32
+- fix clang issue when compile zip, ignore error Wimplicit-function-declaration
+
 * Fri Nov 10 2023 luofeng <luofeng13@huawei.com> - 3.0-31
 - support clang build
 
