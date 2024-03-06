@@ -1,0 +1,91 @@
+--- zip30/unix/configure.bak	2024-03-03 22:16:42.341658986 +0800
++++ zip30/unix/configure	2024-03-03 22:22:07.021622151 +0800
+@@ -18,6 +18,8 @@ trap "rm -f conftest* core a.out; exit 1
+ 
+ CC=${1-cc}
+ CFLAGS=${2-"-I. -DUNIX"}
++CC_OMIT_ERR=" -Wno-implicit-function-declaration"
++CFLAGS="${CFLAGS} ${CC_OMIT_ERR}" 
+ LFLAGS1=''
+ LFLAGS2=''
+ LN="ln -s"
+@@ -376,7 +378,7 @@ int main()
+ }
+ _EOF_
+ # compile it
+-$CC -o conftest conftest.c >/dev/null 2>/dev/null
++$CC $CC_OMIT_ERR -o conftest conftest.c >/dev/null 2>/dev/null
+ if [ $? -ne 0 ]; then
+   echo -- UID/GID test failed on compile - disabling old 16-bit UID/GID support
+   CFLAGS="${CFLAGS} -DUIDGID_NOT_16BIT"
+@@ -430,7 +432,7 @@ int main()
+ }
+ _EOF_
+ # compile it
+-$CC -o conftest conftest.c >/dev/null 2>/dev/null
++$CC $CC_OMIT_ERR -o conftest conftest.c >/dev/null 2>/dev/null
+ if [ $? -ne 0 ]; then
+   echo -- no Large File Support
+ else
+@@ -472,7 +474,7 @@ int main()
+ }
+ _EOF_
+ # compile it
+-$CC -o conftest conftest.c >/dev/null 2>/dev/null
++$CC $CC_OMIT_ERR -o conftest conftest.c >/dev/null 2>/dev/null
+ # OCRCU8 is used by all utilities if Unicode is enabled
+ # OCRCTB is only used by zipcloak
+ if [ $? -ne 0 ]; then
+@@ -513,14 +515,14 @@ for func in rmdir strchr strrchr rename
+ do
+   echo Check for $func
+   echo "int main(){ $func(); return 0; }" > conftest.c
+-  $CC $BFLAG -o conftest conftest.c >/dev/null 2>/dev/null
++  $CC $CC_OMIT_ERR $BFLAG -o conftest conftest.c >/dev/null 2>/dev/null
+   [ $? -ne 0 ] && CFLAGS="${CFLAGS} -DNO_`echo $func | tr '[a-z]' '[A-Z]'`"
+ done
+ 
+ 
+ echo Check for memset
+ echo "int main(){ char k; memset(&k,0,0); return 0; }" > conftest.c
+-$CC -o conftest conftest.c >/dev/null 2>/dev/null
++$CC $CC_OMIT_ERR -o conftest conftest.c >/dev/null 2>/dev/null
+ [ $? -ne 0 ] && CFLAGS="${CFLAGS} -DZMEM"
+ 
+ 
+@@ -544,7 +546,7 @@ $CC -o conftest conftest.c >/dev/null 2>
+ echo Check for errno declaration
+ cat > conftest.c << _EOF_
+ #include <errno.h>
+-main()
++int main()
+ {
+   errno = 0;
+   return 0;
+@@ -559,12 +561,12 @@ cat > conftest.c << _EOF_
+ int main() { return closedir(opendir(".")); }
+ _EOF_
+ 
+-$CC -o conftest conftest.c >/dev/null 2>/dev/null
++$CC $CC_OMIT_ERR -o conftest conftest.c >/dev/null 2>/dev/null
+ if [ $? -ne 0 ]; then
+   OPT=""
+   for lib in ndir dir ucb bsd BSD PW x dirent
+   do
+-    $CC -o conftest conftest.c -l$lib >/dev/null 2>/dev/null
++    $CC $CC_OMIT_ERR -o conftest conftest.c -l$lib >/dev/null 2>/dev/null
+     [ $? -eq 0 ] && OPT=-l$lib && break
+   done
+   if [ ${OPT} ]; then
+@@ -579,9 +581,9 @@ fi
+ 
+ echo Check for readlink
+ echo "int main(){ return readlink(); }" > conftest.c
+-$CC -o conftest conftest.c >/dev/null 2>/dev/null
++$CC $CC_OMIT_ERR -o conftest conftest.c >/dev/null 2>/dev/null
+ if [ $? -ne 0 ]; then
+-  $CC -o conftest conftest.c -lseq >/dev/null 2>/dev/null
++  $CC $CC_OMIT_ERR -o conftest conftest.c -lseq >/dev/null 2>/dev/null
+   [ $? -eq 0 ] && LFLAGS2="${LFLAGS2} -lseq"
+ fi
+ 
